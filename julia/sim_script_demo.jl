@@ -1,5 +1,6 @@
-include("./env.jl")
-using agn
+#include("./env.jl")
+include("./agn.jl")
+#using .env, .agn
 
 # Global Parameters
 hv = 500         # n of HVs
@@ -26,17 +27,27 @@ roads = [Road('1', '2', 720, 20,0,0,0), Road('2', '3', 720, 120, 0, 0, 0), Road(
 netparams = Net_Params(length(roads), 0.9,1.2,0.75,5)
 
 # Init tt's
-update_tt!(roads, netparams)
+for road in roads
+	update_tt!(road, netparams)
+end
 
 # Make network
-network = make_network(roads, '0', '9')
+network = make_network(roads, '1', '9')
 
 # Make drivers
-drivers = [Driver(orig, dest, hv_beta, hv_theta, hv_len, hv_err, hv_atis_bais, [], [], [], 0) for _ in 1:hv]
+drivers = [Driver(orig, dest, hv_beta, hv_theta, hv_len, hv_err, hv_atis_bais, 0, [], [], 0) for _ in 1:hv]
+
 
 # Learn + drive day 1
-learn!.(drivers, network)
+for driver in drivers
+	learn!(driver, network)
+end
 
 # Update network
 update!(network, drivers)
+
+# TODO
+# - Store data
+# cont'n sim loop
+# - Plot
 

@@ -1,11 +1,10 @@
-module env
-export Net_Params, Road, update_tt!, make_network, update!, Network
+#module env
+#export Net_Params, Road, update_tt!, make_network, update!, Network
 
 function traveltime(count, freeflow, capacity)
     tt = freeflow * (1 + 1.15 * ((count / capacity) ^ 4))
     return tt
 end
-
 
 function avgain(g, ba, br, n, a)
     if a == 0
@@ -16,7 +15,6 @@ function avgain(g, ba, br, n, a)
     return e
 end
 
-
 struct Net_Params
     nroads::Int
     ba::Float64
@@ -24,7 +22,6 @@ struct Net_Params
     g::Float64
     n::Int
  end
-
 
 mutable struct Road
     start::Char
@@ -56,17 +53,18 @@ struct Network
     routes
 end
 
-function make_network(roads::Array{Road,1}, origin::Char, destination::Char)
+function make_network(roads::Array{Road}, origin::Char, destination::Char)
 
     # Pathfinder
     routes = []
     # Starting roads
     explore = [road for road in roads if road.start == origin]
+
     # check if start roads reach destination
     closed = [[road] for road in explore if road.endd == destination]
     append!(routes ,closed)
     # Open for exploration, looped until done
-    opn = [road for road in explore if road !== closed]
+    opn = [road for road in explore if road ∉ closed]
     explore = []
 
     for entry in opn
@@ -101,9 +99,9 @@ function update!(net::Network, drivers)
         for driver in drivers
             if road in driver.route
                 count += 1
-                if driver.type == "AV"
-                    av_count += 1
-                 end
+                #if driver.type == "AV"
+                #    av_count += 1
+                # end
              end
         end
         road.count = count
@@ -116,10 +114,11 @@ function test()
     println(traveltime(100,10,100))
     println(avgain(1,1,1,1,1))
 
-    roads = [Road('0', '1', 100, 20, 0, 0, 20), Road('0', '2', 200, 20, 0, 0, 20), Road('2', '3', 100, 20, 0, 0, 20), 
-    Road('1', '3', 200, 20, 0, 0, 20), Road('2', '1', 100, 20, 0, 0, 20)]
+    roads = [Road('1', '2', 720, 20,0,0,0), Road('2', '3', 720, 120, 0, 0, 0), Road('1', '4', 480, 15, 0, 0, 0), Road('2', '5', 360, 12, 0, 0, 0),
+	Road('3', '6', 720, 12, 0, 0, 0), Road('4', '5', 300, 10, 0, 0, 0), Road('5', '6', 360, 12, 0, 0, 0), Road('4', '7', 480, 15, 0, 0, 0),
+	Road('5', '8', 300, 10, 0, 0, 0), Road('6', '9', 720, 30, 0, 0, 0), Road('7', '8', 480, 15, 0, 0, 0) ,Road('8', '9', 480, 15, 0, 0, 0)]
 
-    network = make_network(roads, '0', '3')
+    network = make_network(roads, '1', '9')
     println(network.routes)
 end
 
@@ -128,5 +127,5 @@ if abspath(PROGRAM_FILE) == @__FILE__
 end
 
 #Module
-end
+#end
 

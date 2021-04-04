@@ -1,11 +1,10 @@
+#module agn
 include("./env.jl")
-using env
-
-module agn
+#using .env
 using Random, Distributions
-export Driver, learn!, drive! 
+#export Driver, learn!, drive! 
 
-function problist(plist::Array{Float64}, beta::Float64, theta::Float64)
+function problist(plist::Array, beta, theta::Float64)
     top = [ exp(-(theta)*p) for p in plist]
     sums = sum(top)
     if sums == 0
@@ -23,7 +22,7 @@ mutable struct Driver
     l::Int
     err::Int
     bias::Float64
-    memory::Array{Any}
+    memory
     routes::Array{Any}
     route::Array{Any}
     i::Int
@@ -31,12 +30,12 @@ end
 
 function learn!(driver::Driver, network::Network)
     # Init driver knowlage
-    driver.memory = Dict( road => [road.freeflow + rand(Normal(0, driver.err*10))] for road in network.roadlist )
+    driver.memory = Dict( road => road.freeflow + rand(Normal(0, driver.err*10)) for road in network.roadlist )
     driver.routes = network.routes
 
     # Choose route
     ett = []
-    for route in routes
+    for route in driver.routes
         tt = 0
         for road in route
             tt = tt + (1 - driver.bias)*driver.memory[road] + driver.bias * road.tt
@@ -46,7 +45,7 @@ function learn!(driver::Driver, network::Network)
     probs = problist(ett, 1, driver.theta)
     rando = rand(Uniform(0, 1))
     i = 1
-    while rand > sum( [probs[j] for j in 1:i] )
+    while rando > sum( [probs[j] for j in 1:i] )
         i += 1
     end
     
@@ -55,7 +54,7 @@ function learn!(driver::Driver, network::Network)
     driver.i = i
 end
 
-function drive!(driver::Driver, network::Network)
+function drive!(driver::Driver)
 
     # Update memory
     for road in driver.route
@@ -87,12 +86,12 @@ function drive!(driver::Driver, network::Network)
     # Record Decision
     driver.route = driver.routes[i]
     driver.i = i
-
 end
-
 
 # Test Code
-println(problist([0.25, 0.25, 0.5], .5, 1.0)) # [.1799, .1799, .1401]
+if abspath(PROGRAM_FILE) == @__FILE__
+    println(problist([0.25, 0.25, 0.5], .5, 1.0)) # [.1799, .1799, .1401]
+end
 
 # Module
-end
+#end

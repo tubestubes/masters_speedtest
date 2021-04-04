@@ -1,6 +1,5 @@
-#Envrionment Module
 module env
-
+export Net_Params, Road, update_tt!, make_network, update!, Network
 
 function traveltime(count, freeflow, capacity)
     tt = freeflow * (1 + 1.15 * ((count / capacity) ^ 4))
@@ -96,28 +95,38 @@ end
 
 #TODO
 function update!(net::Network, drivers)
-for road in net.roadlist:
-    count = 0
-    av_count = 0
-    for driver in drivers:
-        if road in driver.route:
-            count += 1
-            if driver.type == 'AV':
-                av_count += 1
-    road.count = count
-    road.av_count = av_count
+    for road in net.roadlist
+        count = 0
+        av_count = 0
+        for driver in drivers
+            if road in driver.route
+                count += 1
+                if driver.type == "AV"
+                    av_count += 1
+                 end
+             end
+        end
+        road.count = count
+        road.av_count = av_count
+    end
+end
 
 # Test Code
-println(traveltime(100,10,100))
-println(avgain(1,1,1,1,1))
+function test()
+    println(traveltime(100,10,100))
+    println(avgain(1,1,1,1,1))
 
-roads = [Road('0', '1', 100, 20, 0, 0, 20), Road('0', '2', 200, 20, 0, 0, 20), Road('2', '3', 100, 20, 0, 0, 20), 
-Road('1', '3', 200, 20, 0, 0, 20), Road('2', '1', 100, 20, 0, 0, 20)]
+    roads = [Road('0', '1', 100, 20, 0, 0, 20), Road('0', '2', 200, 20, 0, 0, 20), Road('2', '3', 100, 20, 0, 0, 20), 
+    Road('1', '3', 200, 20, 0, 0, 20), Road('2', '1', 100, 20, 0, 0, 20)]
 
-network = make_network(roads, '0', '3')
+    network = make_network(roads, '0', '3')
+    println(network.routes)
+end
 
-println(network.routes)
-  
+if abspath(PROGRAM_FILE) == @__FILE__
+    test()
+end
 
+#Module
 end
 

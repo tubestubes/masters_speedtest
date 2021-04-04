@@ -9,13 +9,12 @@
 
 ## Run commands
 - CPython:
-    python -m cProfile -s tottime .\sim_script_demo.py | select -first 10 
-    *python -m cProfile -s tottime .\sim_script_demo.py | select -first 10 > cProfile.md* 
-
-- PyPY
-    *PyPy installed in pypy/pypy*
-    ./pypy/pypy3.exe -m cProfile -s tottime .\sim_script_demo.py  | select -first 10 
-     *./pypy/pypy3.exe -m cProfile -s tottime .\sim_script_demo.py  | select -first 10 > cProfile.md*
+    - python -m cProfile -s tottime .\sim_script_demo.py | select -first 10 
+    - *python -m cProfile -s tottime .\sim_script_demo.py | select -first 10 > cProfile.md* 
+- PyPY:
+    - *PyPy installed in pypy/pypy*
+    - ./pypy/pypy3.exe -m cProfile -s tottime .\sim_script_demo.py  | select -first 10 
+    - *./pypy/pypy3.exe -m cProfile -s tottime .\sim_script_demo.py  | select -first 10 > cProfile.md*
 
 ## Timings
 - Base *original code*: ~ 60s
@@ -26,6 +25,6 @@
 - Cython:
 
 ## TODO
-- Plot outputs, no Pickle -> sanity check outputs
+- Plot outputs, no Pickle/Pandas -> sanity check outputs
 
 

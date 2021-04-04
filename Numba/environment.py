@@ -4,17 +4,16 @@
 # Function to calc av gain from params
 
 import pandas as pd
-from functools import lru_cache as cache
+from numba import jit
 
+@jit(nopython=True)
 # Travel time fn
-@cache(maxsize=None)
 def traveltime(count, freeflow, capacity):
     tt = freeflow * (1 + 1.15 * ((count / capacity) ** 4))
     return tt
 
-
+@jit(nopython=True)
 # AV gain fn
-@cache(maxsize=None)
 def avgain(g, ba, br, n, a):
     """ g: av spacing
         ba: av spacing bebind hv
@@ -39,7 +38,7 @@ class Road:
         self.count = 0
         self.av_count = 0
 
-    @cache(maxsize=None)
+    #@jit(nopython=True)
     def tt(self, network):
         # Adjust capacity for AVs, based on network's AV params
         a = self.av_count / self.count if self.count != 0 else 0

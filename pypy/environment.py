@@ -62,6 +62,7 @@ class Network:
         self.br = br
         self.g = g
         self.n = n
+        
     """
     def display(self):
         # Pandas DataFrames are human readable so
@@ -74,6 +75,7 @@ class Network:
         db['TT'] = [road.tt(self) for road in self.roadlist]
         return db
     """
+    
     # path finding alg
     def routes(self, origin, destination):
         routes = []

@@ -40,7 +40,6 @@ if av > 0:
 for driver in drivers:
     driver.learn(network)
 network.update(drivers)
-print("0 one")
 
 # Make logs
 count_log = pd.DataFrame(columns = [f'Road{i}' for i in range(len(network.roadlist))])
@@ -68,7 +67,6 @@ for i in range(1,N):
     for driver in drivers:
         route_count[driver.i] = route_count[driver.i] + 1
     route_log.loc[i] = route_count
-    print(f"{i} done")
 
 # Export data to file for analysis
 pickle.dump(route_log, open(route_dir, "wb" ))

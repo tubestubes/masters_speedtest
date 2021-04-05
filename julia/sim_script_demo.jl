@@ -1,10 +1,10 @@
-#include("./env.jl")
+@time begin
 include("./agn.jl")
-#using .env, .agn
+using DataFrames, StatsPlots
 
 # Global Parameters
-hv = 500         # n of HVs
-av = 500         # n of AVs
+hv = 1000         # n of HVs
+av = 0         # n of AVs
 N = 500          # n of Days
 orig = '1'
 dest = '9'
@@ -37,17 +37,42 @@ network = make_network(roads, '1', '9')
 # Make drivers
 drivers = [Driver(orig, dest, hv_beta, hv_theta, hv_len, hv_err, hv_atis_bais, 0, [], [], 0) for _ in 1:hv]
 
+# Init logs
+route_log = DataFrame(Route1 = Int[], Route2 = Int[] ,Route3 = Int[] ,Route4 = Int[] ,Route5 = Int[] ,Route6 = Int[])
+road_log = DataFrame(Road1 = Int[], Road2 = Int[], Road3 = Int[], Road4 = Int[], Road5 = Int[], Road6 = Int[], Road7 = Int[], Road8 = Int[], Road9 = Int[],Road10 = Int[], Road11 = Int[], Road12 = Int[])
 
 # Learn + drive day 1
 for driver in drivers
 	learn!(driver, network)
 end
-
-# Update network
 update!(network, drivers)
+push!(road_log, [road.count for road in network.roadlist])
+route_count = [0 for road in 1:length(network.routes)]
+for driver in drivers
+	route_count[driver.i] += 1
+end
+push!(route_log, route_count)
 
-# TODO
-# - Store data
-# cont'n sim loop
-# - Plot
+# Day 2..N
+for i in 2:N
+	for driver in drivers
+		learn!(driver, network)
+	end
+	update!(network, drivers)
+	push!(road_log, [road.count for road in network.roadlist])
+	route_count = [0 for road in 1:length(network.routes)]
+	for driver in drivers
+		route_count[driver.i] += 1
+	end
+	push!(route_log, route_count)
+end
+
+end
+
+# Test Code
+#route_log[!, :day] = 1:length(route_log.Route1)
+#print(first(route_log, 10))
+#@df route_log plot(:day, [:Route1 :Route2 :Route3 :Route4 :Route5 :Route6])
+
+
 
